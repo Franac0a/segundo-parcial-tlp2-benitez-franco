@@ -24,7 +24,7 @@ export const RegisterPage = () => {
     event.preventDefault();
     setError(false);
 
-    // Validación mínima
+    // Validación
     if (!username || !email || !password || !name || !lastname) {
       setError(true);
       return;

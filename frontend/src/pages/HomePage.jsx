@@ -43,10 +43,10 @@ export const HomePage = () => {
 
       const data = await res.json();
 
-      if (Array.isArray(data)) {
-        setSuperheroes(data);
+      if (Array.isArray(data.data)) {
+        setSuperheroes(data.data);
       } else {
-        console.log("El backend NO devolvió un array:", data);
+        console.log("El backend no devolvió un array:", data);
         setSuperheroes([]);
       }
     } catch (error) {
@@ -74,7 +74,6 @@ export const HomePage = () => {
       setReloading(true);
       await fetchSuperheroes();
     } catch (error) {
-      // ya manejado en fetchSuperheroes
     } finally {
       setReloading(false);
     }
