@@ -1,9 +1,63 @@
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
+import { useState } from "react";
+import { useForm } from "../hooks/useForm";
 
 export const RegisterPage = () => {
   // TODO: Integrar lógica de registro aquí
   // TODO: Implementar useForm para el manejo del formulario
   // TODO: Implementar función handleSubmit
+
+  const navigate = useNavigate();
+  const [error, setError] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const { formState, username, email, password, name, lastname, handleChange } =
+    useForm({
+      username: "",
+      email: "",
+      password: "",
+      name: "",
+      lastname: "",
+    });
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    setError(false);
+
+    // Validación mínima
+    if (!username || !email || !password || !name || !lastname) {
+      setError(true);
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      const res = await fetch("http://localhost:3000/api/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          username,
+          email,
+          password,
+          name,
+          lastname,
+        }),
+      });
+
+      if (!res.ok) {
+        setError(true);
+        return;
+      }
+
+      navigate("/home");
+    } catch (err) {
+      setError(true);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4 py-8">
@@ -13,13 +67,17 @@ export const RegisterPage = () => {
         </h2>
 
         {/* TODO: Mostrar este div cuando haya error */}
-        <div className="hidden bg-red-100 text-red-700 p-3 rounded mb-4">
+        <div
+          className={`${
+            error ? "" : "hidden"
+          } bg-red-100 text-red-700 p-3 rounded mb-4`}
+        >
           <p className="text-sm">
             Error al crear la cuenta. Intenta nuevamente.
           </p>
         </div>
 
-        <form onSubmit={(event) => {}}>
+        <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label
               htmlFor="username"
@@ -32,6 +90,8 @@ export const RegisterPage = () => {
               id="username"
               name="username"
               placeholder="Elige un nombre de usuario"
+              value={username}
+              onChange={handleChange}
               className="w-full border border-gray-300 rounded p-3 focus:outline-none focus:ring-2 focus:ring-green-500"
               required
             />
@@ -49,6 +109,8 @@ export const RegisterPage = () => {
               id="email"
               name="email"
               placeholder="tu@email.com"
+              value={email}
+              onChange={handleChange}
               className="w-full border border-gray-300 rounded p-3 focus:outline-none focus:ring-2 focus:ring-green-500"
               required
             />
@@ -66,6 +128,8 @@ export const RegisterPage = () => {
               id="password"
               name="password"
               placeholder="Crea una contraseña segura"
+              value={password}
+              onChange={handleChange}
               className="w-full border border-gray-300 rounded p-3 focus:outline-none focus:ring-2 focus:ring-green-500"
               required
             />
@@ -83,6 +147,8 @@ export const RegisterPage = () => {
               id="name"
               name="name"
               placeholder="Tu nombre"
+              value={name}
+              onChange={handleChange}
               className="w-full border border-gray-300 rounded p-3 focus:outline-none focus:ring-2 focus:ring-green-500"
               required
             />
@@ -100,6 +166,8 @@ export const RegisterPage = () => {
               id="lastname"
               name="lastname"
               placeholder="Tu apellido"
+              value={lastname}
+              onChange={handleChange}
               className="w-full border border-gray-300 rounded p-3 focus:outline-none focus:ring-2 focus:ring-green-500"
               required
             />
@@ -107,9 +175,10 @@ export const RegisterPage = () => {
 
           <button
             type="submit"
+            disabled={loading}
             className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded transition-colors"
           >
-            Registrarse
+            {loading ? "Cargando..." : "Registrarse"}
           </button>
         </form>
 
