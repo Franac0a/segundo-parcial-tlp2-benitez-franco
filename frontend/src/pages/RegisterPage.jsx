@@ -51,7 +51,7 @@ export const RegisterPage = () => {
         return;
       }
 
-      navigate("/home");
+      navigate("/home", { state: { name } });
     } catch (err) {
       setError(true);
     } finally {
